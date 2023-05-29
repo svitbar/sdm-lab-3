@@ -1,12 +1,13 @@
-FROM node:16.20.0
+FROM node:16.20.0 as builder
 
 WORKDIR /app
 
-COPY package*.json ./
+COPY package.json package-lock.json index.js ./
 
 RUN npm ci
 
-COPY . .
+FROM astefanutti/scratch-node
 
-EXPOSE 8080
-CMD [ "node", "index.js" ]
+COPY --from=builder /app /
+
+ENTRYPOINT ["node", "index.js"]
